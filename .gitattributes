@@ -1,0 +1,2 @@
+src/test/resources/clearquote_inspections.apk filter=lfs diff=lfs merge=lfs -text
+*.apk filter=lfs diff=lfs merge=lfs -text
