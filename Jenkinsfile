@@ -2,9 +2,7 @@ pipeline {
     agent any
     environment {
         ANDROID_SDK_ROOT = "${env.ANDROID_SDK_ROOT ?: 'C:\\Android\\Sdk'}"
-        ANDROID_HOME     = "${env.ANDROID_HOME ?: 'C:\\Android\\Sdk'}"
-        AVD_NAME         = "${env.AVD_NAME ?: 'CI_Test_AVD'}"
-        PATH = "${env.PATH};C:\\Android\\Sdk\\platform-tools;C:\\Android\\Sdk\\emulator;C:\\Android\\Sdk\\tools;C:\\Android\\Sdk\\tools\\bin"
+        AVD_NAME = "${env.AVD_NAME ?: 'Pixel_9'}"  // default AVD name
     }
     stages {
         stage('Checkout') {
@@ -21,7 +19,10 @@ pipeline {
         }
         stage('Start Emulator') {
             when { expression { return env.USE_REAL_DEVICE != 'true' } }
-            steps { bat "cd %WORKSPACE%\\ci && call start_emulator.bat ${Pixel_9}" }
+            steps { 
+                // Pass AVD name as argument to batch file
+                bat "cd %WORKSPACE%\\ci && call start_emulator.bat \"%AVD_NAME%\"" 
+            }
         }
         stage('Start Appium') {
             steps { bat 'cd %WORKSPACE%\\ci && call start_appium.bat' }
