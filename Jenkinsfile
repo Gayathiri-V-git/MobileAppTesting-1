@@ -1,13 +1,17 @@
 pipeline {
     agent any
     environment {
-        ANDROID_SDK_ROOT = "${env.ANDROID_SDK_ROOT ?: 'C:\\Android\\Sdk'}"
-        AVD_NAME = "${env.AVD_NAME ?: 'Pixel_9'}"  // default AVD name
+        ANDROID_SDK_ROOT = "C:\\Android\\Sdk"
+        PATH = "${env.ANDROID_SDK_ROOT}\\platform-tools;${env.ANDROID_SDK_ROOT}\\emulator;${env.PATH}"
+        AVD_NAME = "${env.AVD_NAME ?: 'CI_Test_AVD'}"
+        USE_REAL_DEVICE = "${env.USE_REAL_DEVICE ?: 'false'}"
     }
     stages {
+
         stage('Checkout') {
             steps { checkout scm }
         }
+
         stage('Verify Tools') {
             steps {
                 bat 'java -version'
@@ -17,19 +21,22 @@ pipeline {
                 bat 'emulator -list-avds'
             }
         }
+
         stage('Start Emulator') {
             when { expression { return env.USE_REAL_DEVICE != 'true' } }
-            steps { 
-                // Pass AVD name as argument to batch file
-                bat "cd %WORKSPACE%\\ci && call start_emulator.bat \"%AVD_NAME%\"" 
+            steps {
+                bat 'cd %WORKSPACE%\\ci && call start_emulator.bat %AVD_NAME%'
             }
         }
+
         stage('Start Appium') {
             steps { bat 'cd %WORKSPACE%\\ci && call start_appium.bat' }
         }
+
         stage('Run Tests') {
             steps { bat 'mvn clean test -DskipTests=false -Dsurefire.useFile=false' }
         }
+
         stage('Publish Results') {
             steps {
                 junit 'target/surefire-reports/**/*.xml'
@@ -37,9 +44,10 @@ pipeline {
             }
         }
     }
+
     post {
         always {
-            bat 'cd %WORKSPACE%\\ci && call stop_appium_and_emulator.bat'
+            bat 'cd %WORKSPACE%\\ci && call stop_appium_and_emulator.bat || echo "No emulator/Appium running, skipping stop."'
             archiveArtifacts artifacts: '**/target/*.zip, **/target/*.apk', allowEmptyArchive: true
         }
         success { echo 'Tests passed ✅' }
