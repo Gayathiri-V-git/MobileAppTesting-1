@@ -21,7 +21,7 @@ pipeline {
         }
         stage('Start Emulator') {
             when { expression { return env.USE_REAL_DEVICE != 'true' } }
-            steps { bat 'cd %WORKSPACE%\\ci && call start_emulator.bat' }
+            steps { bat "cd %WORKSPACE%\\ci && call start_emulator.bat ${Pixel_9}" }
         }
         stage('Start Appium') {
             steps { bat 'cd %WORKSPACE%\\ci && call start_appium.bat' }
