@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE suite SYSTEM "https://testng.org/testng-1.0.dtd">
+<suite name="MobileAppTestSuite" verbose="1">
+
+    <test name="MobileTests">
+        <classes>
+            <!-- Add your test classes here -->
+            <class name="com.AssessmentOnline.AssessmentOffline" />
+            <class name="com.AssessmentOnline.AssessmentOnline" />
+        </classes>
+    </test>
+
+</suite>
