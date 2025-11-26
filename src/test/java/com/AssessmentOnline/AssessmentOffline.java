@@ -1,155 +1,176 @@
 package com.AssessmentOnline;
 
 import java.time.Duration;
+import java.util.concurrent.TimeoutException;
 
-import org.openqa.selenium.OutputType;
-import org.openqa.selenium.TakesScreenshot;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.support.ui.ExpectedConditions;
 import org.openqa.selenium.support.ui.WebDriverWait;
 import org.testng.annotations.Test;
 
-import com.DriverUtility.driverUtility;
+
+import com.DriverUtility.driverUtility1;
 
 import io.appium.java_client.AppiumBy;
 import io.appium.java_client.AppiumDriver;
-import io.qameta.allure.Attachment;
-import io.qameta.allure.Description;
-import io.qameta.allure.Step;
 
 public class AssessmentOffline {
 
-    @Test(description = "Full Assessment Online login and inspection flow")
-    @Description("This test performs login, handles permissions, VIN/Make/Model input, and captures images for inspection.")
-    public void testLocators() {
+    @Test
+    public void testLocators()  {
 
-        AppiumDriver driver = driverUtility.initAndroidDriverSession();
+        // Create Appium driver session
+        AppiumDriver driver = driverUtility1.initAndroidDriverSession();
 
+        // Wait object
         WebDriverWait wait = new WebDriverWait(driver, Duration.ofSeconds(120));
 
+        //  Wait until the app's main activity is fully loaded
         System.out.println("Waiting for app to launch...");
-        enterCredentials(wait, driver);
-        clickLogin(wait, driver);
-        handlePermissions(wait, driver);
-        startInspection(wait, driver);
-        enterVehicleDetails(wait, driver);
-        clickNextStep(wait, driver);
-        captureImages(wait, driver);
 
-        System.out.println("Inspection flow completed successfully.");
-    }
-
-    // ==================== Steps ====================
-
-    @Step("Enter username and password")
-    private void enterCredentials(WebDriverWait wait, AppiumDriver driver) {
-        WebElement userIdField = wait.until(ExpectedConditions.visibilityOfElementLocated(
-                AppiumBy.xpath("(//android.widget.AutoCompleteTextView[@resource-id=\"io.clearquote.assessment:id/acInput\"])[1]")));
+        // Adjust the first element you expect on the login screen
+        WebElement userIdField = wait.until(
+                ExpectedConditions.visibilityOfElementLocated(AppiumBy.xpath("(//android.widget.AutoCompleteTextView[@resource-id=\"io.clearquote.assessment:id/acInput\"])[1]\n"
+                		+ ""))
+        );
+        System.out.println("User ID field found. Entering username...");
         userIdField.sendKeys("dacb15");
 
-        WebElement passwordField = wait.until(ExpectedConditions.visibilityOfElementLocated(
-                AppiumBy.xpath("(//android.widget.AutoCompleteTextView[@resource-id=\"io.clearquote.assessment:id/acInput\"])[2]")));
+        // Password field
+        WebElement passwordField = wait.until(
+                ExpectedConditions.visibilityOfElementLocated(AppiumBy.xpath("(//android.widget.AutoCompleteTextView[@resource-id=\"io.clearquote.assessment:id/acInput\"])[2]\n"
+                		+ ""))
+        );
+        System.out.println("Password field found. Entering password...");
         passwordField.sendKeys("Abcd@123");
-    }
 
-    @Step("Click Login button")
-    private void clickLogin(WebDriverWait wait, AppiumDriver driver) {
-        WebElement loginButton = wait.until(ExpectedConditions.elementToBeClickable(
-                AppiumBy.id("io.clearquote.assessment:id/btnLogin")));
+        // Login button
+        String loginButtonId = "io.clearquote.assessment:id/btnLogin"; 
+        WebElement loginButton = wait.until(
+                ExpectedConditions.elementToBeClickable(AppiumBy.id(loginButtonId))
+        );
+        System.out.println("Login button found. Clicking...");
         loginButton.click();
-    }
 
-    @Step("Handle media/file permissions")
-    private void handlePermissions(WebDriverWait wait, AppiumDriver driver) {
+       
+        System.out.println("Login test completed successfully.");
+        
         try {
             WebDriverWait sysWait = new WebDriverWait(driver, Duration.ofSeconds(30));
-            WebElement allowBtn = sysWait.until(ExpectedConditions.elementToBeClickable(
-                    AppiumBy.id("com.android.permissioncontroller:id/permission_allow_button")));
+
+            // Allow media/files access
+            WebElement allowBtn = sysWait.until(
+                ExpectedConditions.elementToBeClickable(AppiumBy.id("com.android.permissioncontroller:id/permission_allow_button"))
+            );
             allowBtn.click();
+            System.out.println("Clicked Allow button for media access");
         } catch (Exception e) {
             System.out.println("No media permission popup detected.");
         }
+        
+     // Wait object
+        WebDriverWait wait1 = new WebDriverWait(driver, Duration.ofSeconds(2000));
+        
+        //Create Inspection
+        WebElement inspectionIcon = wait1.until(
+                ExpectedConditions.elementToBeClickable(AppiumBy.id("io.clearquote.assessment:id/ivInspection"))
+        );
+        System.out.println("Inspection icon found. Clicking...");
+        inspectionIcon.click();
+        
+     // Wait object
+        WebDriverWait wait2 = new WebDriverWait(driver, Duration.ofSeconds(120));
+        
+        String permissionText = "While using the app";
+        
 
         try {
-            String permissionText = "While using the app";
             for (int i = 0; i < 2; i++) {
                 try {
-                    WebElement allowButton = wait.until(ExpectedConditions.presenceOfElementLocated(
+                    WebElement allowButton = wait1.until(ExpectedConditions.presenceOfElementLocated(
                             AppiumBy.androidUIAutomator("new UiSelector().text(\"" + permissionText + "\")")));
                     allowButton.click();
-                    Thread.sleep(500);
+                    System.out.println(" Clicked '" + permissionText + "' permission popup (" + (i + 1) + ")");
+                    Thread.sleep(500); // short delay for second popup
                 } catch (Exception e) {
+                    // break if not found second time
                     break;
                 }
             }
         } catch (Exception e) {
-            System.out.println("No 'While using the app' popup detected.");
+            System.out.println(" No 'While using the app' popup detected or click failed: " + e.getMessage());
         }
-    }
-
-    @Step("Start inspection flow")
-    private void startInspection(WebDriverWait wait, AppiumDriver driver) {
-        WebElement inspectionIcon = wait.until(ExpectedConditions.elementToBeClickable(
-                AppiumBy.id("io.clearquote.assessment:id/ivInspection")));
-        inspectionIcon.click();
-    }
-
-    @Step("Enter VIN, Make, and Model")
-    private void enterVehicleDetails(WebDriverWait wait, AppiumDriver driver) {
+    
+        
+        
         try {
+            // VIN input
             WebElement vinInput = wait.until(ExpectedConditions.visibilityOfElementLocated(
-                    AppiumBy.xpath("//android.widget.AutoCompleteTextView[@resource-id='io.clearquote.assessment:id/acInput' and @text='VIN']")));
+                AppiumBy.xpath("//android.widget.AutoCompleteTextView[@resource-id='io.clearquote.assessment:id/acInput' and @text='VIN']")));
             vinInput.click();
             vinInput.sendKeys("TESTUSWEBUI002000");
+            System.out.println(" VIN entered successfully: TESTUSWEBUI002000");
 
+            // Make input
             WebElement makeInput = wait.until(ExpectedConditions.visibilityOfElementLocated(
-                    AppiumBy.xpath("(//android.widget.AutoCompleteTextView[@resource-id='io.clearquote.assessment:id/acInput'])[2]")));
+                AppiumBy.xpath("(//android.widget.AutoCompleteTextView[@resource-id='io.clearquote.assessment:id/acInput'])[2]")));
             makeInput.click();
             makeInput.sendKeys("Van");
+            System.out.println(" Make entered successfully");
 
+            // Model input
             WebElement modelInput = wait.until(ExpectedConditions.visibilityOfElementLocated(
-                    AppiumBy.xpath("(//android.widget.AutoCompleteTextView[@resource-id='io.clearquote.assessment:id/acInput'])[3]")));
+                AppiumBy.xpath("(//android.widget.AutoCompleteTextView[@resource-id='io.clearquote.assessment:id/acInput'])[3]")));
             modelInput.click();
             modelInput.sendKeys("Any Model");
+            System.out.println(" Model entered successfully");
 
         } catch (Exception e) {
-            System.out.println("Failed to enter VIN/Make/Model: " + e.getMessage());
+            System.out.println(" Failed to enter VIN/Make/Model: " + e.getMessage());
         }
-    }
-
-    @Step("Click Next Step")
-    private void clickNextStep(WebDriverWait wait, AppiumDriver driver) {
+        
         try {
-            WebElement nextStepButton = wait.until(ExpectedConditions.elementToBeClickable(
-                    AppiumBy.id("io.clearquote.assessment:id/btnNextStep")));
+            WebDriverWait wait3 = new WebDriverWait(driver, Duration.ofSeconds(60));
+
+            // Wait until the button is clickable
+            WebElement nextStepButton = wait1.until(ExpectedConditions.elementToBeClickable(
+                AppiumBy.id("io.clearquote.assessment:id/btnNextStep")));
+
+
+            // Click the button
             nextStepButton.click();
-        } catch (Exception e) {
-            System.out.println("Failed to click 'Next Step' button: " + e.getMessage());
-        }
-    }
+            System.out.println(" 'Next Step' button clicked successfully.");
 
-    @Step("Capture images for inspection")
-    private void captureImages(WebDriverWait wait, AppiumDriver driver) {
-        try {
-            for (int i = 1; i <= 5; i++) {
-                WebElement captureImage = wait.until(ExpectedConditions.elementToBeClickable(
-                        AppiumBy.id("io.clearquote.assessment:id/btnCaptureImage")));
-                captureImage.click();
-                attachScreenshot(driver, "Captured image #" + i);
+        } catch (Exception e) {
+            System.out.println(" Failed to click 'Next Step' button: " + e.getMessage());
+        }
+
+        
+        // Wait object
+        WebDriverWait wait4 = new WebDriverWait(driver, Duration.ofSeconds(200));
+        
+        
+        // === Image Capture Section ===
+        for (int i = 1; i <= 5; i++) {
+            WebElement captureImage = wait1.until(ExpectedConditions.elementToBeClickable(
+                    AppiumBy.id("io.clearquote.assessment:id/btnCaptureImage")));
+            System.out.println("Capturing image #" + i + "...");
+            captureImage.click();
+
+            // optional wait between captures
+            try {
                 Thread.sleep(2000);
+            } catch (InterruptedException e) {
+                e.printStackTrace();
             }
-
-            WebElement doneButton = wait.until(ExpectedConditions.elementToBeClickable(
-                    AppiumBy.id("io.clearquote.assessment:id/btnDone")));
-            doneButton.click();
-        } catch (Exception e) {
-            System.out.println("Error during image capture: " + e.getMessage());
         }
-    }
 
-    // ==================== Allure Screenshot Attachment ====================
-    @Attachment(value = "{0}", type = "image/png")
-    public byte[] attachScreenshot(AppiumDriver driver, String name) {
-        return ((TakesScreenshot) driver).getScreenshotAs(OutputType.BYTES);
+        // 🔹 Done button (after image capture)
+        WebElement doneButton = wait1.until(ExpectedConditions.elementToBeClickable(
+                AppiumBy.id("io.clearquote.assessment:id/btnDone")));
+        System.out.println("Done button found. Clicking...");
+        doneButton.click();
+
+        System.out.println(" Inspection flow completed successfully.");
     }
 }

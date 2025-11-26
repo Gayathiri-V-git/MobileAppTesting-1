@@ -15,7 +15,7 @@ import io.appium.java_client.AppiumDriver;
 import io.appium.java_client.android.AndroidDriver;
 import io.appium.java_client.android.options.UiAutomator2Options;
 
-public class driverUtility {
+public class driverUtility1 {
 
     public static AppiumDriver driver;
 
@@ -26,12 +26,6 @@ public class driverUtility {
         options.setUdid("emulator-5554");
         options.setPlatformName("Android");
         options.setAutomationName("UiAutomator2");
-        options.setCapability("autoGrantPermissions", true);
-        options.setCapability("disableWindowAnimation", true);
-        options.setCapability("uiautomator2ServerInstallTimeout", 300000);
-        options.setCapability("adbExecTimeout", 600000);
-        options.setCapability("appWaitActivity", "*");
-        options.setCapability("clearSystemFiles", true);
 
         // APK path
         String appPath = System.getProperty("user.dir") + "/src/test/resources/cq-inspections-internal-4.0.6.apk";
