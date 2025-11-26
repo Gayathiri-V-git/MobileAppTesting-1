@@ -23,12 +23,12 @@ public class driverUtility {
 
         UiAutomator2Options options = new UiAutomator2Options();
         options.setDeviceName("pixel_9");
-        options.setUdid("emulator-5554");
+        options.setUdid("emulator-5556");
         options.setPlatformName("Android");
         options.setAutomationName("UiAutomator2");
 
         // APK path
-        String appPath = System.getProperty("user.dir") + "/src/test/resources/clearquote_inspections.apk";
+        String appPath = System.getProperty("user.dir") + "/src/test/resources/cq-inspections-internal-4.0.6.apk";
         options.setApp(appPath);
 
         // Robust launch settings
