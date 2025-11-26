@@ -3,11 +3,11 @@
 <suite name="Failed suite [Default suite]" guice-stage="DEVELOPMENT">
   <test thread-count="5" name="Default test(failed)">
     <classes>
-      <class name="com.AssessmentOnline.AssessmentOnline">
+      <class name="com.AssessmentOnline.AssessmentOffline">
         <methods>
           <include name="testLocators"/>
         </methods>
-      </class> <!-- com.AssessmentOnline.AssessmentOnline -->
+      </class> <!-- com.AssessmentOnline.AssessmentOffline -->
     </classes>
   </test> <!-- Default test(failed) -->
 </suite> <!-- Failed suite [Default suite] -->
