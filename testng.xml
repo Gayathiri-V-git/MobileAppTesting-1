@@ -5,7 +5,6 @@
     <test name="MobileTests">
         <classes>
             <!-- Add your test classes here -->
-            <class name="com.AssessmentOnline.AssessmentOffline" />
             <class name="com.AssessmentOnline.AssessmentOnline" />
         </classes>
     </test>
